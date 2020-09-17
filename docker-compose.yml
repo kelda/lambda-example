@@ -1,0 +1,19 @@
+services:
+  lambda:
+    image: lambci/lambda:python2.7
+    environment:
+      DOCKER_LAMBDA_STAY_OPEN: 1
+      DOCKER_LAMBDA_WATCH: 1
+    volumes:
+      - './lambda:/var/task'
+    ports:
+      - '9001:9001'
+    # Older runtimes such as python2.7 restart code by making the container
+    # exit, and rely on Docker to restart the container.
+    # Newer runtimes shouldn't need this line -- docker-lambda will reload the
+    # code without exiting the container.
+    restart: on-failure
+  invoker:
+    build: invoker
+    depends_on:
+      - lambda
